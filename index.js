@@ -1,11 +1,12 @@
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import cors from "cors";
+import dotenv from "dotenv";
 import UserM from "./Db/schema1.js";
 import ProductM from "./Db/schema2.js";
 import DataM from "./Db/schema3.js";
 import sendEmail from "./mail.js";
+import Mailer from "./mail2.js";
 
 const app = express();
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT;
 const DB_URL = process.env.MONGO_URI;
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -42,8 +44,7 @@ app.get("/pdts", async (req, res) => {
 app.get("/register", async (req, res) => {
   try {
     const users = await UserM.find();
-    // res.json(users);
-    console.log("user added");
+    res.json(users);
   } catch (error) {
     res.status(500).json({ message: error });
   }
@@ -59,7 +60,9 @@ app.post("/register", async (req, res) => {
       password,
     });
     sendEmail(email, name)
-      .then(() => console.log(`Email successfully sent! TO ${email}`))
+      .then(() => {
+        console.log(`Email successfully sent! TO ${email}`);
+      })
       .catch((error) => console.error("Failed to send email:", error));
 
     await user.save();
@@ -68,7 +71,20 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ message: error });
   }
 });
-
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await UserM.findOne({ email: email, password: password });
+    if (user) {
+      await Mailer(email, user.name);
+      res.json(user);
+    } else {
+      res.status(401).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 app.post("/setup", async (req, res) => {
   const { imglink, role, address, order, money, password } = req.body;
   try {

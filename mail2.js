@@ -12,7 +12,7 @@ const oauth2Client = new OAuth2(
 oauth2Client.setCredentials({
   refresh_token: process.env.REFRESH_TOKEN,
 });
-async function sendEmail(to, name) {
+async function Mailer(to, name) {
   try {
     const accessToken = await oauth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
@@ -30,15 +30,15 @@ async function sendEmail(to, name) {
     const mailOptions = {
       from: process.env.EMAIL,
       to: to,
-      subject: "Welcome to Shopcart!",
-      text: `Hello ${name}! Welcome to ShopKart!`,
-      html: ` <h1>Welcome to Shopcart!</h1>
-      <p>Dear Customer,</p>
-      <p>We're excited to have you on board. Thank you for registering at our shop!</p>
-      <p>Start your amazing shopping experience right now and let us know if you need any assistance.</p>
-      <p>Happy shopping!</p>
-      <p>Best regards,</p>
-      <p>The Shopcart Team</p>`,
+      subject: "Welcome Back to Shopcart!",
+      text: `Hello ${name}! Welcome back to ShopKart! We're thrilled to see you again. Enjoy your shopping experience!`,
+      html: `
+          <h1>Welcome Back to Shopcart, ${name}!</h1>
+          <p>We're thrilled to see you again. Here's to another great shopping experience!</p>
+          <p>Remember, if you need any assistance, we're here to help. Happy shopping!</p>
+          <p>Best regards,</p>
+          <p>The Shopcart Team</p>
+        `,
     };
     const result = await transporter.sendMail(mailOptions);
     return result;
@@ -47,4 +47,4 @@ async function sendEmail(to, name) {
   }
 }
 
-export default sendEmail;
+export default Mailer;
