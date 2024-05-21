@@ -76,3 +76,4 @@ async function sendEmail(to, name) {
     }
   });
 }
+export default sendEmail;
