@@ -6,7 +6,6 @@ import UserM from "./Db/schema1.js";
 import ProductM from "./Db/schema2.js";
 import DataM from "./Db/schema3.js";
 import sendEmail from "./mail.js";
-import { google } from "googleapis";
 
 const app = express();
 dotenv.config();
@@ -43,9 +42,10 @@ app.get("/pdts", async (req, res) => {
 app.get("/register", async (req, res) => {
   try {
     const users = await UserM.find();
-    res.json(users);
+    // res.json(users);
+    console.log("user added");
   } catch (error) {
-    res.json({ message: error });
+    res.status(500).json({ message: error });
   }
 });
 
@@ -65,7 +65,7 @@ app.post("/register", async (req, res) => {
     await user.save();
     res.json(user);
   } catch (error) {
-    res.json({ message: error });
+    res.status(500).json({ message: error });
   }
 });
 
